@@ -19,7 +19,7 @@ async def start(client, message):
 
 @app.on_message(filters.text & ~filters.command("start"))
 async def download_ig(client, message):
-    url = message.text.strip().split("?")[0]  # Remove query parameters
+    url = message.text.strip().split("?")[0]  # Remove extra query parameters
 
     if not INSTAGRAM_REGEX.match(url):
         await message.reply_text("❌ Please send a valid Instagram post, reel, or IGTV URL.")
@@ -28,14 +28,20 @@ async def download_ig(client, message):
     data = fetch_ig_media(url)
 
     if data.get("status") and data.get("data"):
-        media = data["data"][0]
-        media_url = media["url"]
-        media_type = media["type"]
+        sent_count = 0
 
-        if media_type == "video":
-            await message.reply_video(media_url, caption="Downloaded by xeon")
-        else:
-            await message.reply_text("Media type not supported yet.")
+        for media in data["data"]:
+            media_url = media.get("url")
+            media_type = media.get("type")
+
+            if media_type == "video":
+                await message.reply_video(media_url, caption="Downloaded by xeon")
+                sent_count += 1
+            else:
+                await message.reply_text(f"Media type '{media_type}' not supported yet.")
+
+        if sent_count == 0:
+            await message.reply_text("No videos found to download.")
     else:
         await message.reply_text("❌ Failed to download. Make sure the link is correct.")
 
