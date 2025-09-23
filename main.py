@@ -24,7 +24,7 @@ async def download_ig(client, message):
         media_url = media["url"]
         media_type = media["type"]
         if media_type == "video":
-            await message.reply_video(media_url, caption=f"Downloaded by {data['creator']}")
+            await message.reply_video(media_url, caption="Downloaded by xeon")
         else:
             await message.reply_text("Media type not supported yet.")
     else:
