@@ -6,7 +6,7 @@ import re
 app = Client("ig_downloader_bot", api_id=API_ID, api_hash=API_HASH, bot_token=BOT_TOKEN)
 
 INSTAGRAM_REGEX = re.compile(
-    r"(https?://)?(www\.)?instagram\.com/(p|reel|tv)/[A-Za-z0-9_-]+/?"
+    r"(https?://)?(www\.)?instagram\.com/(p|reel|tv)/[A-Za-z0-9_-]+"
 )
 
 @app.on_message(filters.command("start"))
@@ -19,19 +19,19 @@ async def start(client, message):
 
 @app.on_message(filters.text & ~filters.command("start"))
 async def download_ig(client, message):
-    url = message.text.strip()
-    
+    url = message.text.strip().split("?")[0]  # Remove query parameters
+
     if not INSTAGRAM_REGEX.match(url):
         await message.reply_text("❌ Please send a valid Instagram post, reel, or IGTV URL.")
         return
 
     data = fetch_ig_media(url)
-    
+
     if data.get("status") and data.get("data"):
         media = data["data"][0]
         media_url = media["url"]
         media_type = media["type"]
-        
+
         if media_type == "video":
             await message.reply_video(media_url, caption="Downloaded by xeon")
         else:
