@@ -8,9 +8,9 @@ from utils.ig_api import fetch_ig_media
 SESSION_DIR = "./session"
 os.makedirs(SESSION_DIR, exist_ok=True)
 
-# ✅ Use persistent session path
+# ✅ Use persistent session path (positional arg instead of session_name=)
 app = Client(
-    session_name=os.path.join(SESSION_DIR, "ig_downloader_bot"),
+    os.path.join(SESSION_DIR, "ig_downloader_bot"),  # <-- fixed here
     api_id=API_ID,
     api_hash=API_HASH,
     bot_token=BOT_TOKEN
