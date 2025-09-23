@@ -46,21 +46,28 @@ async def start(client, message):
 
 @app.on_message(filters.text & ~filters.command("start"))
 async def downloader(client, message):
-    url = message.text.strip().split()[0]  # only first URL if multiple
-    clean_url = url.split("?")[0]
+    raw_url = message.text.strip().split()[0]
 
-    # ✅ Check if it is a valid Instagram link
+    # ✅ Clean URL first (remove query params and trailing slash)
+    clean_url = raw_url.split("?")[0].rstrip("/")
+
+    # ✅ Updated flexible regex
+    INSTAGRAM_REGEX = re.compile(
+        r"^https?://(www\.)?instagram\.com/(p|reel|tv)/[A-Za-z0-9_\-]+$"
+    )
+
+    # ✅ Now validate after cleaning
     if not INSTAGRAM_REGEX.match(clean_url):
         await message.reply_text("❌ Please send a valid Instagram post, reel, or IGTV URL.")
         return
 
+    # ✅ Fetch media from API
     data = fetch_ig_media(clean_url)
 
     if not data.get("status"):
         await message.reply_text("❌ Failed to download. API might be busy or the link is invalid.")
         return
 
-    # ✅ Extract video or image link
     result = data.get("result", [])
     if not result:
         await message.reply_text("❌ No media found in the provided link.")
