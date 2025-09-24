@@ -57,6 +57,7 @@ async def download_ig(client, message):
         await message.reply_text("❌ Media type not supported yet.")
 
 # ✅ Start the bot in a background thread
+# ✅ Start the bot in a background thread
 def run_bot():
     bot.run()
 
@@ -64,4 +65,5 @@ if __name__ == "__main__":
     threading.Thread(target=run_bot).start()
     # Render provides the port in the $PORT env variable
     port = int(os.environ.get("PORT", 10000))
-    flask_app.run(host="0.0.0.0", por_
+    flask_app.run(host="0.0.0.0", port=port)
+
